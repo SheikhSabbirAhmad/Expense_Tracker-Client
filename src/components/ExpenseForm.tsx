@@ -21,10 +21,6 @@ export default function ExpenseForm({
     date: "",
   });
 
-  // ==========================
-  // Edit করলে Form Auto Fill
-  // ==========================
-
   useEffect(() => {
     if (editingExpense) {
       setFormData({
@@ -36,9 +32,8 @@ export default function ExpenseForm({
     }
   }, [editingExpense]);
 
-  // ==========================
   // Input Change
-  // ==========================
+
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -51,9 +46,7 @@ export default function ExpenseForm({
     });
   };
 
-  // ==========================
   // Submit
-  // ==========================
 
   const handleSubmit = async (
     e: React.FormEvent
@@ -68,9 +61,7 @@ export default function ExpenseForm({
     try {
       let response;
 
-      // ======================
       // UPDATE
-      // ======================
 
       if (editingExpense?._id) {
         response = await fetch(
@@ -86,9 +77,7 @@ export default function ExpenseForm({
         );
       }
 
-      // ======================
       // ADD
-      // ======================
 
       else {
         response = await fetch(

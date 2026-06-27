@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
+import ExpenseChart from "@/components/ExpenseChart";
 
 export type Expense = {
   _id?: string;
@@ -26,9 +27,7 @@ export default function Home() {
   const fetchExpenses = async () => {
     try {
       const res = await fetch("http://localhost:5000/expenses");
-
       const data = await res.json();
-
       setExpenses(data);
     } catch (error) {
       console.log(error);
@@ -50,20 +49,22 @@ export default function Home() {
 
   return (
     <>
+      {/* Header */}
       <Header
         totalExpenses={expenses.length}
         totalAmount={totalAmount}
       />
 
-      <main className="max-w-6xl mx-auto p-10">
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto p-10 space-y-8">
+        {/* Expense Form */}
         <ExpenseForm
           editingExpense={editingExpense}
           fetchExpenses={fetchExpenses}
-          clearEditing={() =>
-            setEditingExpense(null)
-          }
+          clearEditing={() => setEditingExpense(null)}
         />
 
+        {/* Expense List */}
         <ExpenseList
           expenses={expenses}
           fetchExpenses={fetchExpenses}
@@ -71,6 +72,9 @@ export default function Home() {
             setEditingExpense(expense)
           }
         />
+
+        {/* Expense Pie Chart */}
+        <ExpenseChart expenses={expenses} />
       </main>
     </>
   );
