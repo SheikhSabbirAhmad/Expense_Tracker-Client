@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Expense } from "@/app/page";
 
-export default function ExpenseForm() {
+type Props = {
+  editingExpense: Expense | null;
+  fetchExpenses: () => Promise<void>;
+  clearEditing: () => void;
+};
+
+export default function ExpenseForm({
+  editingExpense,
+  fetchExpenses,
+  clearEditing,
+}: Props) {
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -10,8 +21,29 @@ export default function ExpenseForm() {
     date: "",
   });
 
+  // ==========================
+  // Edit করলে Form Auto Fill
+  // ==========================
+
+  useEffect(() => {
+    if (editingExpense) {
+      setFormData({
+        title: editingExpense.title,
+        amount: editingExpense.amount.toString(),
+        category: editingExpense.category,
+        date: editingExpense.date,
+      });
+    }
+  }, [editingExpense]);
+
+  // ==========================
+  // Input Change
+  // ==========================
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -19,32 +51,112 @@ export default function ExpenseForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // ==========================
+  // Submit
+  // ==========================
+
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
-    console.log(formData);
+    const expense = {
+      ...formData,
+      amount: Number(formData.amount),
+    };
 
-    // পরে এখানে API Call করবে
+    try {
+      let response;
 
-    setFormData({
-      title: "",
-      amount: "",
-      category: "",
-      date: "",
-    });
+      // ======================
+      // UPDATE
+      // ======================
+
+      if (editingExpense?._id) {
+        response = await fetch(
+          `http://localhost:5000/expenses/${editingExpense._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify(expense),
+          }
+        );
+      }
+
+      // ======================
+      // ADD
+      // ======================
+
+      else {
+        response = await fetch(
+          "http://localhost:5000/expenses",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify(expense),
+          }
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(
+          editingExpense
+            ? "Expense Updated Successfully!"
+            : "Expense Added Successfully!"
+        );
+
+        // Reset Form
+
+        setFormData({
+          title: "",
+          amount: "",
+          category: "",
+          date: "",
+        });
+
+        // Edit Mode Off
+
+        clearEditing();
+
+        // Refresh Table
+
+        fetchExpenses();
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong!");
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        Add New Expense
+    <div className="bg-white shadow rounded-xl p-6 mb-10">
+
+      <h2 className="text-3xl font-bold mb-6">
+
+        {editingExpense
+          ? "Update Expense"
+          : "Add New Expense"}
+
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5"
+      >
 
         {/* Title */}
+
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
+
+          <label className="block mb-2 font-medium">
             Expense Title
           </label>
 
@@ -53,15 +165,18 @@ export default function ExpenseForm() {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter expense title"
-            className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Expense title"
             required
+            className="w-full border rounded-lg px-4 py-3"
           />
+
         </div>
 
         {/* Amount */}
+
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
+
+          <label className="block mb-2 font-medium">
             Amount
           </label>
 
@@ -70,15 +185,18 @@ export default function ExpenseForm() {
             name="amount"
             value={formData.amount}
             onChange={handleChange}
-            placeholder="Enter amount"
-            className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Amount"
             required
+            className="w-full border rounded-lg px-4 py-3"
           />
+
         </div>
 
         {/* Category */}
+
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
+
+          <label className="block mb-2 font-medium">
             Category
           </label>
 
@@ -86,20 +204,38 @@ export default function ExpenseForm() {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
+            className="w-full border rounded-lg px-4 py-3"
           >
-            <option value="">Select Category</option>
-            <option value="Food">Food</option>
-            <option value="Transport">Transport</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Others">Others</option>
+            <option value="">
+              Select Category
+            </option>
+
+            <option value="Food">
+              Food
+            </option>
+
+            <option value="Transport">
+              Transport
+            </option>
+
+            <option value="Shopping">
+              Shopping
+            </option>
+
+            <option value="Others">
+              Others
+            </option>
+
           </select>
+
         </div>
 
         {/* Date */}
+
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
+
+          <label className="block mb-2 font-medium">
             Expense Date
           </label>
 
@@ -108,19 +244,48 @@ export default function ExpenseForm() {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
+            className="w-full border rounded-lg px-4 py-3"
           />
+
         </div>
 
-        {/* Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold py-3 rounded-lg cursor-pointer"
-        >
-          Add Expense
-        </button>
+        {/* Buttons */}
+
+        <div className="flex gap-4">
+
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+          >
+            {editingExpense
+              ? "Update Expense"
+              : "Add Expense"}
+          </button>
+
+          {editingExpense && (
+            <button
+              type="button"
+              onClick={() => {
+                clearEditing();
+
+                setFormData({
+                  title: "",
+                  amount: "",
+                  category: "",
+                  date: "",
+                });
+              }}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg"
+            >
+              Cancel
+            </button>
+          )}
+
+        </div>
+
       </form>
+
     </div>
   );
 }
