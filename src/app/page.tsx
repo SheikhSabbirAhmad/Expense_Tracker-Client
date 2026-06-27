@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import Header from "@/components/Header";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 
@@ -14,15 +16,16 @@ export type Expense = {
 
 export default function Home() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-
   const [editingExpense, setEditingExpense] =
     useState<Expense | null>(null);
 
+  // ==========================
+  // Fetch Expenses
+  // ==========================
+
   const fetchExpenses = async () => {
     try {
-      const res = await fetch(
-        "http://localhost:5000/expenses"
-      );
+      const res = await fetch("http://localhost:5000/expenses");
 
       const data = await res.json();
 
@@ -36,25 +39,39 @@ export default function Home() {
     fetchExpenses();
   }, []);
 
+  // ==========================
+  // Calculate Total Amount
+  // ==========================
+
+  const totalAmount = expenses.reduce(
+    (sum, expense) => sum + Number(expense.amount),
+    0
+  );
+
   return (
-    <main className="max-w-6xl mx-auto p-10">
-
-      <ExpenseForm
-        editingExpense={editingExpense}
-        fetchExpenses={fetchExpenses}
-        clearEditing={() =>
-          setEditingExpense(null)
-        }
+    <>
+      <Header
+        totalExpenses={expenses.length}
+        totalAmount={totalAmount}
       />
 
-      <ExpenseList
-        expenses={expenses}
-        fetchExpenses={fetchExpenses}
-        onEdit={(expense) =>
-          setEditingExpense(expense)
-        }
-      />
+      <main className="max-w-6xl mx-auto p-10">
+        <ExpenseForm
+          editingExpense={editingExpense}
+          fetchExpenses={fetchExpenses}
+          clearEditing={() =>
+            setEditingExpense(null)
+          }
+        />
 
-    </main>
+        <ExpenseList
+          expenses={expenses}
+          fetchExpenses={fetchExpenses}
+          onEdit={(expense) =>
+            setEditingExpense(expense)
+          }
+        />
+      </main>
+    </>
   );
 }

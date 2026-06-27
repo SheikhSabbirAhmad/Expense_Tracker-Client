@@ -136,47 +136,49 @@ export default function ExpenseForm({
     }
   };
 
-  return (
-    <div className="bg-white shadow rounded-xl p-6 mb-10">
+ return (
+  <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 p-5 sm:p-6 md:p-8 mb-10">
 
-      <h2 className="text-3xl font-bold mb-6">
-
-        {editingExpense
-          ? "Update Expense"
-          : "Add New Expense"}
-
+    <div className="mb-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+        {editingExpense ? "Update Expense" : "Add New Expense"}
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5"
-      >
+      <p className="text-gray-500 mt-2 text-sm sm:text-base">
+        {editingExpense
+          ? "Update your existing expense information."
+          : "Fill in the details below to add a new expense."}
+      </p>
+    </div>
 
-        {/* Title */}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+    >
+      {/* Title */}
+
+      <div>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">
+          Expense Title
+        </label>
+
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Enter expense title"
+          required
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+        />
+      </div>
+
+      {/* Amount + Category */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <div>
-
-          <label className="block mb-2 font-medium">
-            Expense Title
-          </label>
-
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Expense title"
-            required
-            className="w-full border rounded-lg px-4 py-3"
-          />
-
-        </div>
-
-        {/* Amount */}
-
-        <div>
-
-          <label className="block mb-2 font-medium">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
             Amount
           </label>
 
@@ -185,18 +187,14 @@ export default function ExpenseForm({
             name="amount"
             value={formData.amount}
             onChange={handleChange}
-            placeholder="Amount"
+            placeholder="Enter amount"
             required
-            className="w-full border rounded-lg px-4 py-3"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
           />
-
         </div>
 
-        {/* Category */}
-
         <div>
-
-          <label className="block mb-2 font-medium">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
             Category
           </label>
 
@@ -205,87 +203,68 @@ export default function ExpenseForm({
             value={formData.category}
             onChange={handleChange}
             required
-            className="w-full border rounded-lg px-4 py-3"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
           >
-            <option value="">
-              Select Category
-            </option>
-
-            <option value="Food">
-              Food
-            </option>
-
-            <option value="Transport">
-              Transport
-            </option>
-
-            <option value="Shopping">
-              Shopping
-            </option>
-
-            <option value="Others">
-              Others
-            </option>
-
+            <option value="">Select Category</option>
+            <option value="Food">🍔 Food</option>
+            <option value="Transport">🚗 Transport</option>
+            <option value="Shopping">🛍 Shopping</option>
+            <option value="Others">📦 Others</option>
           </select>
-
         </div>
 
-        {/* Date */}
+      </div>
 
-        <div>
+      {/* Date */}
 
-          <label className="block mb-2 font-medium">
-            Expense Date
-          </label>
+      <div>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">
+          Expense Date
+        </label>
 
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-            className="w-full border rounded-lg px-4 py-3"
-          />
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          required
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+        />
+      </div>
 
-        </div>
+      {/* Buttons */}
 
-        {/* Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 pt-2">
 
-        <div className="flex gap-4">
+        <button
+          type="submit"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-all duration-200 text-white font-semibold py-3 rounded-xl shadow-md"
+        >
+          {editingExpense ? "Update Expense" : "Add Expense"}
+        </button>
 
+        {editingExpense && (
           <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+            type="button"
+            onClick={() => {
+              clearEditing();
+
+              setFormData({
+                title: "",
+                amount: "",
+                category: "",
+                date: "",
+              });
+            }}
+            className="flex-1 sm:flex-none px-8 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-200"
           >
-            {editingExpense
-              ? "Update Expense"
-              : "Add Expense"}
+            Cancel
           </button>
+        )}
 
-          {editingExpense && (
-            <button
-              type="button"
-              onClick={() => {
-                clearEditing();
+      </div>
 
-                setFormData({
-                  title: "",
-                  amount: "",
-                  category: "",
-                  date: "",
-                });
-              }}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg"
-            >
-              Cancel
-            </button>
-          )}
-
-        </div>
-
-      </form>
-
-    </div>
-  );
+    </form>
+  </div>
+);
 }
