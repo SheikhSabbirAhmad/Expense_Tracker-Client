@@ -26,7 +26,7 @@ export default function Home() {
 
   const fetchExpenses = async () => {
     try {
-      const res = await fetch("http://localhost:5000/expenses");
+      const res = await fetch("https://expense-tracker-server-eight-black.vercel.app/expenses");
       const data = await res.json();
       setExpenses(data);
     } catch (error) {

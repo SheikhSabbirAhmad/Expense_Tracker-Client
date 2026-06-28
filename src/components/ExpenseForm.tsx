@@ -65,7 +65,7 @@ export default function ExpenseForm({
 
       if (editingExpense?._id) {
         response = await fetch(
-          `http://localhost:5000/expenses/${editingExpense._id}`,
+          `https://expense-tracker-server-eight-black.vercel.app/expenses/${editingExpense._id}`,
           {
             method: "PUT",
             headers: {
@@ -81,7 +81,7 @@ export default function ExpenseForm({
 
       else {
         response = await fetch(
-          "http://localhost:5000/expenses",
+          "https://expense-tracker-server-eight-black.vercel.app/expenses",
           {
             method: "POST",
             headers: {

@@ -26,7 +26,7 @@ export default function ExpenseList({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/expenses/${id}`,
+        `https://expense-tracker-server-eight-black.vercel.app/expenses/${id}`,
         {
           method: "DELETE",
         }
